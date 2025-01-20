@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { GoogleGenerativeAI } from "@google/generative-ai"
 import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist';
 import Tesseract from 'tesseract.js';
 import FileUpload from './components/FileUpload';
@@ -9,7 +10,14 @@ import ThemeToggle from './components/ThemeToggle';
 import FeedbackModal from './components/FeedbackModal';
 import { FiGithub, FiHelpCircle, FiMessageSquare } from 'react-icons/fi';
 import './index.css';
-GlobalWorkerOptions.workerSrc = '../public/pdf.worker.min.js';
+GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
+const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
+
+const genAI = new GoogleGenerativeAI(API_KEY);
+const model = genAI.getGenerativeModel({
+  model: "gemini-1.5-flash",
+  systemInstruction: "You are a summarization assistant. Your task is to create a summary of the provided text. Please focus only on the content given in the input text. Do not add any external knowledge, opinions, or details that are not mentioned in the input. The summary should be concise and within the specified word limit.Keep your response strictly to the main ideas and points provided in the text.Avoid any hallucination or fabrication of content.",
+});
 
 function App() {
   const [extractedText, setExtractedText] = useState('');
@@ -69,9 +77,16 @@ function App() {
   const handleGenerateSummary = async () => {
     setIsGenerating(true);
     try {
-      // Simulate summary generation
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      setSummary('**Key point 1** Lorem ipsum dolor sit amet...\n\n**Key point 2** Consectetur adipiscing elit...');
+      const wordLimit = summaryLength === 'short' ? 50 : summaryLength === 'medium' ? 100 : 200;
+
+    // Create the prompt with the word limit
+    const prompt = `You are a summarization assistant. Your task is to summarize the following text in approximately ${wordLimit} words.Only summarize the content that is present in the provided text. Do not add, omit, or alter any information.Your summary should strictly reflect the main points and ideas from the input text. Avoid any hallucinations, fabrication of new content, or additional information.Focus solely on what is provided, and ensure the summary remains within the specified word limit.Text:${extractedText.replace(/\n/g, ' ').trim()}`;
+
+    // Generate the summary
+    const result = await model.generateContent(prompt);
+
+    // Set the generated summary
+    setSummary(result.response.text());
     } catch (error) {
       console.error('Error generating summary:', error);
     } finally {
@@ -130,7 +145,7 @@ function App() {
           <div className="flex justify-between items-center">
             <div className="flex space-x-4">
               <a
-                href="https://github.com/yourusername/document-summarizer"
+                href="https://github.com/UtkarshA1712/TLDRapp"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-500 hover:text-gray-700"
