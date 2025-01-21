@@ -74,25 +74,27 @@ function App() {
     }
   };
 
-  const handleGenerateSummary = async () => {
+  const handleGenerateSummary = async (highlightKeyPoints) => {
     setIsGenerating(true);
     try {
       const wordLimit = summaryLength === 'short' ? 50 : summaryLength === 'medium' ? 100 : 200;
-
-    // Create the prompt with the word limit
-    const prompt = `You are a summarization assistant. Your task is to summarize the following text in approximately ${wordLimit} words.Only summarize the content that is present in the provided text. Do not add, omit, or alter any information.Your summary should strictly reflect the main points and ideas from the input text. Avoid any hallucinations, fabrication of new content, or additional information.Focus solely on what is provided, and ensure the summary remains within the specified word limit.Text:${extractedText.replace(/\n/g, ' ').trim()}`;
-
-    // Generate the summary
-    const result = await model.generateContent(prompt);
-
-    // Set the generated summary
-    setSummary(result.response.text());
+  
+      // Modify the prompt to include "highlight key points" in bullet points if the checkbox is checked
+      const prompt = `You are a summarization assistant. Your task is to summarize the following text in approximately ${wordLimit} words. Only summarize the content that is present in the provided text. Do not add, omit, or alter any information. Your summary should strictly reflect the main points and ideas from the input text. Avoid any hallucinations, fabrication of new content, or additional information. Focus solely on what is provided, and ensure the summary remains within the specified word limit.${highlightKeyPoints ? ' Additionally, highlight the key points in bullet points.' : ''}Text:${extractedText.replace(/\n/g, ' ').trim()}`;
+  
+      // Generate the summary
+      const result = await model.generateContent(prompt);
+  
+      // Set the generated summary
+      setSummary(result.response.text());
     } catch (error) {
       console.error('Error generating summary:', error);
     } finally {
       setIsGenerating(false);
     }
   };
+  
+  
 
   return (
     <div className={`min-h-screen ${theme === 'dark' ? 'dark' : ''}`}>
@@ -119,18 +121,6 @@ function App() {
               onGenerate={handleGenerateSummary}
               loading={isGenerating}
             />
-            
-            <div className="mt-4">
-              <label className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  checked={highlightKeyPoints}
-                  onChange={(e) => setHighlightKeyPoints(e.target.checked)}
-                  className="text-blue-500 focus:ring-blue-500"
-                />
-                <span className="text-sm text-gray-700">Highlight Key Points</span>
-              </label>
-            </div>
 
             {summary && (
               <Summary
@@ -165,9 +155,7 @@ function App() {
                 <FiHelpCircle className="h-5 w-5" />
               </button>
             </div>
-            <p className="text-sm text-gray-500">
-              © 2024 Document Summarizer. All rights reserved.
-            </p>
+           
           </div>
         </footer>
 

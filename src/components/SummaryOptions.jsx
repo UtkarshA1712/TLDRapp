@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 const SummaryOptions = ({ length, onLengthChange, onGenerate, loading }) => {
+  const [highlightKeyPoints, setHighlightKeyPoints] = useState(false);
+
   const lengthOptions = [
     { value: 'short', label: 'Short', description: '~2-3 sentences' },
     { value: 'medium', label: 'Medium', description: '~4-5 sentences' },
@@ -46,8 +48,21 @@ const SummaryOptions = ({ length, onLengthChange, onGenerate, loading }) => {
         </div>
       </div>
 
+      {/* Highlight Key Points Checkbox */}
+      <div className="mt-4">
+        <label className="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            checked={highlightKeyPoints}
+            onChange={(e) => setHighlightKeyPoints(e.target.checked)}
+            className="text-blue-500 focus:ring-blue-500"
+          />
+          <span className="text-sm text-gray-700">Highlight Key Points</span>
+        </label>
+      </div>
+
       <button
-        onClick={onGenerate}
+        onClick={() => onGenerate(highlightKeyPoints)}
         disabled={loading}
         className={`w-full py-3 px-4 rounded-lg text-white font-medium transition-all duration-200
           ${loading

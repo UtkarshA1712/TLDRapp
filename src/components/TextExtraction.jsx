@@ -25,8 +25,8 @@ const TextExtraction = ({ text, loading, onRetry }) => {
           onClick={onRetry}
           className="flex items-center space-x-2 text-sm text-blue-500 hover:text-blue-600 bg-blue-50 px-3 py-1.5 rounded-full transition-colors duration-200"
         >
-          <FiRefreshCw className="h-4 w-4" />
-          <span>Try Again</span>
+          {/* <FiRefreshCw className="h-4 w-4" /> */}
+          {/* <span>Try Again</span> */}
         </button> 
       </div>
 
