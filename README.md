@@ -58,8 +58,8 @@ TLDRapp is a smart document summarization tool that allows users to upload PDF o
 #### Steps to Run
 1. Clone the repository:
   ```bash
-     git clone https://github.com/your-username/tldrapp.git
-     cd tldrapp
+  git clone https://github.com/your-username/tldrapp.git
+  cd tldrapp
   ```
    
 2. Install dependencies:
